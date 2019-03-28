@@ -47,5 +47,9 @@ dependencies {
     // di
     implementation 'org.kodein.di:kodein-di-generic-jvm:5.0.1'
 
+    //Chuck - http log/debug
+    debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+
 
 }

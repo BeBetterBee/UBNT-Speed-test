@@ -37,6 +37,9 @@ class HomePageActivity : BaseActivity<com.beebetter.wifer.databinding.ActivityHo
     private fun obtainLocalizacion(){
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
+                viewModel.latitude = location?.latitude
+                viewModel.longitude = location?.longitude
+                viewModel.userLocation = location
                val latitude =  location?.latitude
                 val longitude = location?.longitude
                 Log.d("location",latitude.toString()

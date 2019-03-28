@@ -1,7 +1,5 @@
 package com.beebetter.api
 
-import com.beebetter.api.ApiConfig
-import com.beebetter.api.ApiService
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
@@ -15,7 +13,7 @@ val apiModule = Kodein.Module {
         Retrofit.Builder()
             .baseUrl(ApiConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(ApiService.getGson()))
-            .client(ApiService.initOkHttp())
+           // .client(ApiService.initOkHttp())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
     }
