@@ -1,5 +1,6 @@
 package com.beebetter.api
 
+import android.app.Application
 import androidx.annotation.NonNull
 import com.beebetter.api.ApiConfig.Companion.BASE_URL
 import com.google.gson.Gson
@@ -9,11 +10,24 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import org.kodein.di.Kodein
+import org.kodein.di.generic.bind
+import org.kodein.di.generic.singleton
 
 class ApiService {
     companion object {
         var stsService:StsService? = null
 
+        val apiModule = Kodein.Module {
+            bind<Retrofit>() with singleton {
+                Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(getGson()))
+                    .client(initOkHttp())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build()
+            }
+        }
         fun initStsService(){
             stsService = initRxRetrofit(BASE_URL, initOkHttp()).create(StsService::class.java)
         }
@@ -29,7 +43,7 @@ class ApiService {
         }
 
         @NonNull
-        protected fun getGson(): Gson {
+        fun getGson(): Gson {
             return GsonBuilder()
                 .setLenient()
                 .create()

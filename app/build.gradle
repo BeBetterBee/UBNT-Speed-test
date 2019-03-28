@@ -48,4 +48,7 @@ dependencies {
     implementation 'com.jakewharton.rxbinding2:rxbinding:2.1.1'
     implementation 'com.jakewharton.rxbinding2:rxbinding-support-v4:2.1.0'
     implementation 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7:2.1.0'
+
+    // di
+    implementation 'org.kodein.di:kodein-di-generic-jvm:5.0.1'
 }
