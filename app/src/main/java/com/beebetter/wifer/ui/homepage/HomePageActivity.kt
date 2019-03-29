@@ -6,20 +6,22 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import com.beebetter.base.view.BaseActivity
+import com.beebetter.wifer.R
+import com.beebetter.wifer.databinding.ActivityHomepageBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.tbruyelle.rxpermissions2.RxPermissions
 
 
-class HomePageActivity : BaseActivity<com.beebetter.wifer.databinding.ActivityHomepageBinding,HomePageVM>() {
-    override val layoutId = com.beebetter.wifer.R.layout.activity_homepage
+class HomePageActivity : BaseActivity<ActivityHomepageBinding,HomePageVM>() {
+    override val layoutId = R.layout.activity_homepage
     override val viewModelClass = HomePageVM::class
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     val rxPermissions = RxPermissions(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.beebetter.wifer.R.layout.activity_homepage)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         rxPermissions

@@ -4,24 +4,45 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
                 name="vm"
                 type="com.beebetter.wifer.ui.homepage.HomePageVM"/>
     </data>
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".ui.homepage.HomePageActivity">
+    <!--<androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--tools:context=".ui.homepage.HomePageActivity">-->
 
-        <TextView
-                android:layout_width="wrap_content"
+    <!--<TextView-->
+    <!--android:layout_width="100dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="@{vm.stsServerUrl}"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent" app:layout_constraintHorizontal_bias="0.526"-->
+    <!--app:layout_constraintVertical_bias="0.938" android:id="@+id/txt_closest_server"-->
+    <!--android:visibility="visible" android:padding="20dp" android:background="@android:color/holo_red_dark"/>-->
+    <!--<Button-->
+    <!--android:text="Button"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:onClick="@{() -> vm.startTest()}"-->
+    <!--android:id="@+id/button" app:layout_constraintTop_toTopOf="parent"-->
+    <!--android:layout_marginTop="165dp" android:layout_marginEnd="147dp"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"/>-->
+
+    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+    android:orientation="vertical">
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:text="@{vm.stsServerUrl}"/>
+        <Button android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hello World!"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:onClick="@{()-> vm.startTest()}"/>
+    </LinearLayout>
 </layout>

@@ -21,7 +21,10 @@ android {
         }
     }
 
-    dataBinding.enabled = true
+    dataBinding {
+        enabled = true
+    }
+
 }
 
 dependencies {
@@ -51,4 +54,11 @@ dependencies {
 
     // di
     implementation 'org.kodein.di:kodein-di-generic-jvm:5.0.1'
+
+    //Android Architecture Components
+    implementation("androidx.lifecycle:lifecycle-runtime:2.0.0")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.0.0")
+    kapt "androidx.lifecycle:lifecycle-compiler:2.0.0"
+    implementation "android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha07"
+    implementation "android.arch.navigation:navigation-ui-ktx:1.0.0-alpha07"
 }
