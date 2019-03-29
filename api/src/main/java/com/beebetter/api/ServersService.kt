@@ -1,6 +1,6 @@
 package com.beebetter.api
 
-import com.beebetter.api.model.ServerResponse
+import com.beebetter.api.model.server.ServerResponse
 import com.beebetter.api.model.TokenResponse
 import io.reactivex.Single
 import retrofit2.http.GET

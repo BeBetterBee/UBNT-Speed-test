@@ -1,4 +1,4 @@
-package com.beebetter.api.model
+package com.beebetter.api.model.server
 
 data class ServerResponse(val city:String,
                           val country:String,
