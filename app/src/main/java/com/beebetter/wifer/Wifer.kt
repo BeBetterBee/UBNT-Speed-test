@@ -4,7 +4,7 @@ import android.app.Application
 import com.beebetter.api.ApiConfig.Companion.BASE_URL
 import com.beebetter.api.ApiService
 import com.beebetter.api.ApiService.Companion.initRxRetrofit
-import com.beebetter.api.StsService
+import com.beebetter.api.ServersService
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
@@ -16,9 +16,9 @@ class Wifer : Application() {
         lateinit var instance: Wifer
         var kodein = Kodein {
             bind<Retrofit>() with singleton { initRxRetrofit(BASE_URL, ApiService.initOkHttp()) }
-            bind<StsService>() with singleton {
+            bind<ServersService>() with singleton {
                 val retrofit: Retrofit = instance()
-                retrofit.create(StsService::class.java)
+                retrofit.create(ServersService::class.java)
             }
         }
     }

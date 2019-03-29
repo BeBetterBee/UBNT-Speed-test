@@ -18,8 +18,8 @@ val apiModule = Kodein.Module {
             .build()
     }
 
-    bind<StsService>() with singleton {
+    bind<ServersService>() with singleton {
         val retrofit: Retrofit = instance()
-        retrofit.create(StsService::class.java)
+        retrofit.create(ServersService::class.java)
     }
 }

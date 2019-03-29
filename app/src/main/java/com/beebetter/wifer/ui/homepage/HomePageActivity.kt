@@ -23,7 +23,7 @@ class HomePageActivity : BaseActivity<com.beebetter.wifer.databinding.ActivityHo
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         rxPermissions
-            .request(Manifest.permission.ACCESS_COARSE_LOCATION)
+            .request(Manifest.permission.ACCESS_FINE_LOCATION)
             .subscribe { granted ->
                 if (granted) {
                     obtainLocalization()
@@ -37,8 +37,6 @@ class HomePageActivity : BaseActivity<com.beebetter.wifer.databinding.ActivityHo
     private fun obtainLocalization(){
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
-                viewModel.latitude = location?.latitude
-                viewModel.longitude = location?.longitude
                 viewModel.userLocation = location
                 viewModel.getToken()
                val latitude =  location?.latitude
