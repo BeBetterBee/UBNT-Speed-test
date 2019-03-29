@@ -26,7 +26,7 @@ class HomePageActivity : BaseActivity<com.beebetter.wifer.databinding.ActivityHo
             .request(Manifest.permission.ACCESS_COARSE_LOCATION)
             .subscribe { granted ->
                 if (granted) {
-                    obtainLocalizacion()
+                    obtainLocalization()
                 } else {
                     // Oups permission denied
                 }
@@ -34,12 +34,13 @@ class HomePageActivity : BaseActivity<com.beebetter.wifer.databinding.ActivityHo
     }
 
     @SuppressLint("MissingPermission")
-    private fun obtainLocalizacion(){
+    private fun obtainLocalization(){
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 viewModel.latitude = location?.latitude
                 viewModel.longitude = location?.longitude
                 viewModel.userLocation = location
+                viewModel.getToken()
                val latitude =  location?.latitude
                 val longitude = location?.longitude
                 Log.d("location",latitude.toString()

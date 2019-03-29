@@ -16,7 +16,7 @@ interface StsService {
     @GET("/api/v2/servers")
     fun getServers(@Query("latitude") latitude: Double,
                    @Query("longitude") longitude: Double,
-                   @Header("x-test-token") token:String):Single<Array<ServerResponse>>
+                   @Header("x-test-token") token:String):Single<List<ServerResponse>>
 
 
 }
