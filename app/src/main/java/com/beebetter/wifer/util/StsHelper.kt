@@ -1,5 +1,6 @@
 package com.beebetter.wifer.util
 
+import android.content.Context
 import android.location.Location
 import com.beebetter.api.ApiService
 import com.beebetter.api.StsService

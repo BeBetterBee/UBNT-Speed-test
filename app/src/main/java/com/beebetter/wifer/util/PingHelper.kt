@@ -3,6 +3,7 @@ package com.beebetter.wifer.util
 import com.beebetter.api.model.ping.PingBdo
 import com.beebetter.api.model.ping.PingResponse
 import com.beebetter.api.model.server.ServerBdo
+import com.beebetter.base.util.RxUtil
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -11,9 +12,7 @@ import io.reactivex.schedulers.Schedulers
 class PingHelper {
     companion object {
         fun getPingObservable(serverBdo: ServerBdo, token: String): Observable<PingBdo>? {
-            return serverBdo.apiService?.ping(token)
-                ?.subscribeOn(Schedulers.io())
-                ?.observeOn(AndroidSchedulers.mainThread())
+            return RxUtil.applySchedulers(serverBdo.apiService?.ping(token)!!)
                 ?.flatMap { pingResponse ->
                     val ping = PingBdo.convert(pingResponse?.body() as PingResponse)
                     serverBdo.pingBdo = ping

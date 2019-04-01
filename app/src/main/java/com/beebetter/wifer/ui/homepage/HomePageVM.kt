@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.beebetter.api.ServersService
 import com.beebetter.api.model.server.ServerBdo
+import com.beebetter.base.util.RxUtil
 import com.beebetter.base.viewmodel.BaseViewModel
 import com.beebetter.wifer.Wifer.Companion.kodein
 import com.beebetter.wifer.util.Converter
@@ -23,6 +24,8 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     //KodeinAware,
     override fun startTest() {
         Log.d("btn", "onBtnClick")
+
+
     }
 
     // override val kodein by lazy { Wifer.kodein }
@@ -35,8 +38,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     var stsServerUrl = MutableLiveData<String>()
 
     fun getToken() {
-        apiService.getToken().subscribeOn(Schedulers.io())
-            ?.observeOn(AndroidSchedulers.mainThread())
+        RxUtil.applySchedulers(apiService.getToken())
             ?.doOnError { Log.d("testApi", "No response") }
             ?.subscribe { response ->
                 token = response.token
@@ -46,9 +48,8 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     }
 
     private fun getServers(token: String): Disposable? {
-        return apiService.getServers(userLocation?.latitude!!, userLocation?.longitude!!, token)
-            .subscribeOn(Schedulers.io())
-            ?.observeOn(AndroidSchedulers.mainThread())
+        return RxUtil.applySchedulers(
+            apiService.getServers(userLocation?.latitude!!, userLocation?.longitude!!, token))
             ?.doOnError { Log.d("testApi", "No response server") }
             ?.subscribe { response ->
                 val resObjects = ArrayList<ServerBdo>()
@@ -83,8 +84,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     }
 
     private fun pickSmallestPing() {
-        getSmallestPingObservable(closest5Servers)?.subscribeOn(Schedulers.io())
-            ?.observeOn(AndroidSchedulers.mainThread())
+        RxUtil.applySchedulers(getSmallestPingObservable(closest5Servers)!!)
             ?.subscribe { it ->
                 stsServerUrl.value = (it.url)
                 Log.d(
@@ -111,7 +111,5 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
                             }
                     }
             }
-
-
     }
 }
