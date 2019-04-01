@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers
 
 class PingHelper {
     companion object {
-        fun getPingObservable(serverBdo: ServerBdo, token: String): Single<PingBdo>? {
+        fun getPingObservable(serverBdo: ServerBdo, token: String): Observable<PingBdo>? {
             return serverBdo.apiService?.ping(token)
                 ?.subscribeOn(Schedulers.io())
                 ?.observeOn(AndroidSchedulers.mainThread())
@@ -19,7 +19,7 @@ class PingHelper {
                     serverBdo.pingBdo = ping
                     ping.timeResponse =  pingResponse.raw().sentRequestAtMillis()
                     -pingResponse.raw().receivedResponseAtMillis()
-                    Single.just(ping)
+                    Observable.just(ping)
                 }
         }
 

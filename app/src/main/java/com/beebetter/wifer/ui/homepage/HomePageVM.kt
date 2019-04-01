@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit
 class HomePageVM : BaseViewModel(), HomePage.VM {
     //KodeinAware,
     override fun startTest() {
-        Log.d("btn","onBtnClick")
+        Log.d("btn", "onBtnClick")
     }
 
-   // override val kodein by lazy { Wifer.kodein }
+    // override val kodein by lazy { Wifer.kodein }
     private val apiService: ServersService by kodein.instance()
     var userLocation: Location? = null
     var token: String = ""
@@ -74,25 +74,16 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     private fun setApiForStsServers(closest5Servers: List<ServerBdo>) {
         StsHelper.getApiForStsObservable(closest5Servers)
             ?.subscribe { it ->
-                getPingResponses(it)
+                getPingResponses()
             }
     }
 
-    private fun getPingResponses(closest5Servers: List<ServerBdo>) {
-        setPing(closest5Servers[0])
-        setPing(closest5Servers[1])
-        setPing(closest5Servers[2])
-        setPing(closest5Servers[3])
-        setPing(closest5Servers[4])
-
-        Observable.timer(15, TimeUnit.SECONDS)  .subscribeOn(Schedulers.io())
-            ?.observeOn(AndroidSchedulers.mainThread())?.subscribe {
-            pickSmallestPing()
-        }
+    private fun getPingResponses() {
+        setPing()
     }
 
     private fun pickSmallestPing() {
-        getSmallestPingObservable(closest5Servers)  ?.subscribeOn(Schedulers.io())
+        getSmallestPingObservable(closest5Servers)?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe { it ->
                 stsServerUrl.value = (it.url)
@@ -103,8 +94,24 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
             }
     }
 
-    private fun setPing(serverBdo: ServerBdo) {
-        getPingObservable(serverBdo, token)
-            ?.subscribe { pingResponse -> Log.d("pong", pingResponse.timeResponse.toString()) }
+    private fun setPing() {
+        getPingObservable(closest5Servers[0], token)
+            ?.subscribe { it ->
+                getPingObservable(closest5Servers[1], token)
+                    ?.subscribe { it ->
+                        getPingObservable(closest5Servers[2], token)
+                            ?.subscribe { it ->
+                                getPingObservable(closest5Servers[3], token)
+                                    ?.subscribe { it ->
+                                        getPingObservable(closest5Servers[4], token)
+                                            ?.subscribe { it ->
+                                                pickSmallestPing()
+                                            }
+                                    }
+                            }
+                    }
+            }
+
+
     }
 }
