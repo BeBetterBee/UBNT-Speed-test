@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import com.beebetter.api.ServersService
 import com.beebetter.api.model.server.ServerBdo
 import com.beebetter.base.viewmodel.BaseViewModel
-import com.beebetter.wifer.BR
-import com.beebetter.wifer.Wifer
 import com.beebetter.wifer.Wifer.Companion.kodein
 import com.beebetter.wifer.util.Converter
 import com.beebetter.wifer.util.PingHelper.Companion.getPingObservable
@@ -17,7 +15,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
 import java.util.concurrent.TimeUnit
 
