@@ -24,7 +24,12 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     //KodeinAware,
     override fun startTest() {
         Log.d("btn", "onBtnClick")
-
+        RxUtil.applySchedulers(
+            stsServer.value?.apiService
+                ?.testDownload(token)!!
+        ).subscribe{it ->
+            val bt = it.raw().body()?.byteStream()
+        }
 
     }
 
@@ -49,7 +54,8 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
 
     private fun getServers(token: String): Disposable? {
         return RxUtil.applySchedulers(
-            apiService.getServers(userLocation?.latitude!!, userLocation?.longitude!!, token))
+            apiService.getServers(userLocation?.latitude!!, userLocation?.longitude!!, token)
+        )
             ?.doOnError { Log.d("testApi", "No response server") }
             ?.subscribe { response ->
                 val resObjects = ArrayList<ServerBdo>()
@@ -87,6 +93,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
         RxUtil.applySchedulers(getSmallestPingObservable(closest5Servers)!!)
             ?.subscribe { it ->
                 stsServerUrl.value = (it.url)
+                stsServer.value = it
                 Log.d(
                     "pinger", "smallest ping " + it.pingBdo!!.timeResponse
                             + " for server " + it.url
