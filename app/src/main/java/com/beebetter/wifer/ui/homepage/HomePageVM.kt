@@ -11,29 +11,27 @@ import com.beebetter.wifer.Wifer.Companion.kodein
 import com.beebetter.wifer.util.Converter
 import com.beebetter.wifer.util.PingHelper.Companion.getPingObservable
 import com.beebetter.wifer.util.PingHelper.Companion.getSmallestPingObservable
+import com.beebetter.wifer.util.ProgressHelper.measureDownloadSpeed
 import com.beebetter.wifer.util.StsHelper
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import org.kodein.di.generic.instance
-import java.util.concurrent.TimeUnit
 
 
 class HomePageVM : BaseViewModel(), HomePage.VM {
-    //KodeinAware,
+
     override fun startTest() {
         Log.d("btn", "onBtnClick")
         RxUtil.applySchedulers(
             stsServer.value?.apiService
                 ?.testDownload(token)!!
-        ).subscribe{it ->
-            val bt = it.raw().body()?.byteStream()
-        }
-
+            .map{
+                it ->  measureDownloadSpeed(it.body(),downloadSpeed,System.currentTimeMillis())
+            }
+                )
+    .repeat().subscribe { it ->
+    }
     }
 
-    // override val kodein by lazy { Wifer.kodein }
     private val apiService: ServersService by kodein.instance()
     var userLocation: Location? = null
     var token: String = ""
@@ -41,6 +39,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     lateinit var closest5Servers: List<ServerBdo>
     var stsServer = MutableLiveData<ServerBdo>()
     var stsServerUrl = MutableLiveData<String>()
+    val downloadSpeed = MutableLiveData<String>()
 
     fun getToken() {
         RxUtil.applySchedulers(apiService.getToken())
@@ -53,6 +52,11 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     }
 
     private fun getServers(token: String): Disposable? {
+        if(userLocation ==null ||userLocation?.latitude==null||userLocation?.longitude==null){
+            userLocation = Location("r")
+userLocation?.latitude = 47.9999
+            userLocation?.longitude = 19.56656
+        }
         return RxUtil.applySchedulers(
             apiService.getServers(userLocation?.latitude!!, userLocation?.longitude!!, token)
         )
@@ -76,7 +80,6 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
                 Log.d("distances", "all distances sorted" + closestServers)
             }
     }
-
 
     private fun setApiForStsServers(closest5Servers: List<ServerBdo>) {
         StsHelper.getApiForStsObservable(closest5Servers)

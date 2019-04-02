@@ -17,10 +17,6 @@ class RxUtil {
             return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         }
 
-        fun <T> applySchedulers(maybe: Maybe<T>): Maybe<T> {
-            return maybe.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-        }
-
         fun <T> applySchedulers(single: Single<T>): Single<T> {
             return single.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         }
