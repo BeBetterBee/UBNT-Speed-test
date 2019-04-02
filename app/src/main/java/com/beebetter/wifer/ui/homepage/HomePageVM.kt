@@ -13,25 +13,14 @@ import com.beebetter.wifer.util.PingHelper.Companion.getPingObservable
 import com.beebetter.wifer.util.PingHelper.Companion.getSmallestPingObservable
 import com.beebetter.wifer.util.ProgressHelper.measureDownloadSpeed
 import com.beebetter.wifer.util.StsHelper
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import okhttp3.ResponseBody
 import org.kodein.di.generic.instance
+import org.reactivestreams.Subscriber
 
 
 class HomePageVM : BaseViewModel(), HomePage.VM {
-
-    override fun startTest() {
-        Log.d("btn", "onBtnClick")
-        RxUtil.applySchedulers(
-            stsServer.value?.apiService
-                ?.testDownload(token)!!
-            .map{
-                it ->  measureDownloadSpeed(it.body(),downloadSpeed,System.currentTimeMillis())
-            }
-                )
-    .repeat().subscribe { it ->
-    }
-    }
-
     private val apiService: ServersService by kodein.instance()
     var userLocation: Location? = null
     var token: String = ""
@@ -40,6 +29,31 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     var stsServer = MutableLiveData<ServerBdo>()
     var stsServerUrl = MutableLiveData<String>()
     val downloadSpeed = MutableLiveData<String>()
+    val downloadAvailable = MutableLiveData<Boolean>().apply{value = false}
+    var compositeDisposable = CompositeDisposable()
+
+    lateinit var downloadSubscriber: Subscriber<ResponseBody>
+
+    override fun onTestBtnClick() {
+        if(downloadAvailable.value!!){
+            compositeDisposable.clear()
+        } else {
+            startDownloadTest()
+        }
+        downloadAvailable.value = !downloadAvailable.value!!
+    }
+
+    private fun startDownloadTest() {
+        val downloadDisposable = RxUtil.applySchedulers(
+            stsServer.value?.apiService
+                ?.testDownload(token)!!
+                .map { it ->
+                    measureDownloadSpeed(it.body(), downloadSpeed, System.currentTimeMillis())
+                }
+        )
+            .repeat().subscribe { downloadSubscriber }
+        compositeDisposable.add(downloadDisposable)
+    }
 
     fun getToken() {
         RxUtil.applySchedulers(apiService.getToken())

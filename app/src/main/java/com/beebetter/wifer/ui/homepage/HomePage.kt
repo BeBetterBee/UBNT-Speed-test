@@ -5,6 +5,6 @@ interface HomePage {
     }
 
     interface VM{
-        fun startTest()
+        fun onTestBtnClick()
     }
 }
