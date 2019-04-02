@@ -18,6 +18,7 @@ interface StsService {
     fun ping(@Header("x-test-token") token:String): Observable<Response<PingResponse>>
 
     @Streaming
-    @GET("/download?size=200000000")
-    fun testDownload(@Header("x-test-token") token:String):Observable<Response<ResponseBody>>
+    @GET("/download")
+    fun testDownload(@Header("x-test-token") token:String,
+                     @Query("size") downloadSize:Long):Observable<Response<ResponseBody>>
 }

@@ -7,6 +7,7 @@ import com.beebetter.api.ServersService
 import com.beebetter.api.model.server.ServerBdo
 import com.beebetter.base.util.RxUtil
 import com.beebetter.base.viewmodel.BaseViewModel
+import com.beebetter.wifer.AppConfig.Companion.TEST_DOWNLOAD_SIZE
 import com.beebetter.wifer.Wifer.Companion.kodein
 import com.beebetter.wifer.util.Converter
 import com.beebetter.wifer.util.PingHelper.Companion.getPingObservable
@@ -46,7 +47,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     private fun startDownloadTest() {
         val downloadDisposable = RxUtil.applySchedulers(
             stsServer.value?.apiService
-                ?.testDownload(token)!!
+                ?.testDownload(token,TEST_DOWNLOAD_SIZE)!!
                 .map { it ->
                     measureDownloadSpeed(it.body(), downloadSpeed, System.currentTimeMillis())
                 }
