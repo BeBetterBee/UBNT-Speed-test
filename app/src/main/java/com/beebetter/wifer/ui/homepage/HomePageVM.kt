@@ -39,14 +39,14 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
 
     override fun onTestBtnClick() {
         if (downloadAvailable.value!!) {
-            compositeDisposable.clear()
+            finishTest()
         } else {
             startDownloadTest()
         }
-        downloadAvailable.value = !downloadAvailable.value!!
     }
 
     private fun startDownloadTest() {
+        downloadAvailable.value = true
         startTestCountdown()
         val downloadDisposable = RxUtil.applySchedulers(
             stsServer.value?.apiService
@@ -62,12 +62,16 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     private fun startTestCountdown() {
         getTimerObservable(TEST_COUNTDOWN)
             .doOnComplete {
-                Log.d("fin", "finish")
-                compositeDisposable.clear()
+                finishTest()
             }
             .subscribe { it ->
                 Log.d("timer", it.toString())
             }
+    }
+
+    private fun finishTest() {
+        compositeDisposable.clear()
+        downloadAvailable.postValue(false)
     }
 
     fun getToken() {
