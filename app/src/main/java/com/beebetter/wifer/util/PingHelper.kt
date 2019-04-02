@@ -1,5 +1,6 @@
 package com.beebetter.wifer.util
 
+import android.util.Log
 import com.beebetter.api.model.ping.PingBdo
 import com.beebetter.api.model.ping.PingResponse
 import com.beebetter.api.model.server.ServerBdo
@@ -16,8 +17,10 @@ class PingHelper {
                 ?.flatMap { pingResponse ->
                     val ping = PingBdo.convert(pingResponse?.body() as PingResponse)
                     serverBdo.pingBdo = ping
-                    ping.timeResponse =  pingResponse.raw().sentRequestAtMillis()
-                    -pingResponse.raw().receivedResponseAtMillis()
+                    ping.timeResponse.value =
+                    pingResponse.raw().receivedResponseAtMillis() - pingResponse.raw().sentRequestAtMillis()
+                    Log.d("PingResponse",pingResponse.raw().sentRequestAtMillis().toString())
+                    Log.d("PingResponseReceived",pingResponse.raw().receivedResponseAtMillis().toString())
                     Observable.just(ping)
                 }
         }
@@ -25,7 +28,7 @@ class PingHelper {
         fun getSmallestPingObservable(closest5Servers: List<ServerBdo>): Observable<ServerBdo>? {
             val allPings = ArrayList<Float>()
             return Observable.just(closest5Servers)
-                .map { unsorted -> unsorted.sortedBy { allPings.add(it.pingBdo?.timeResponse!!.toFloat()) } }
+                .map { unsorted -> unsorted.sortedBy { allPings.add(it.pingBdo?.timeResponse!!.value!!.toFloat()) } }
                 .take(1)
                 .map { it[0] }
         }

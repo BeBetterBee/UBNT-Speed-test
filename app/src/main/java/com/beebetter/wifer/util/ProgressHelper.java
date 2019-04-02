@@ -38,7 +38,7 @@ public class ProgressHelper {
                     passedTime = System.currentTimeMillis() - startDownloadTime;
                     if(passedTime!=0) {
                         speed =(( Double.valueOf(progress)/Double.valueOf(MEGABYTE)) / (Double.valueOf(passedTime)/1000));
-                        downloadSpeed.postValue(String.valueOf(speed));
+                        downloadSpeed.postValue(String.valueOf(String.format("%.2f", speed)));
                     }
                     Log.d(TAG, "Progress M: " + ( progress/MEGABYTE) + "/" + passedTime + " >>>> " + String.valueOf(speed));
                 }

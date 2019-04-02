@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Wifer</string>
+
+    <string name="ping">%1$s ms</string>
+    <string name="download_speed">%1$s Mbps</string>
 </resources>
