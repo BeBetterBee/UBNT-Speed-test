@@ -7,6 +7,7 @@ import com.beebetter.api.ServersService
 import com.beebetter.api.model.server.ServerBdo
 import com.beebetter.base.util.RxUtil
 import com.beebetter.base.viewmodel.BaseViewModel
+import com.beebetter.wifer.AppConfig.Companion.TEST_COUNTDOWN
 import com.beebetter.wifer.AppConfig.Companion.TEST_DOWNLOAD_SIZE
 import com.beebetter.wifer.Wifer.Companion.kodein
 import com.beebetter.wifer.util.Converter
@@ -14,6 +15,7 @@ import com.beebetter.wifer.util.PingHelper.Companion.getPingObservable
 import com.beebetter.wifer.util.PingHelper.Companion.getSmallestPingObservable
 import com.beebetter.wifer.util.ProgressHelper.measureDownloadSpeed
 import com.beebetter.wifer.util.StsHelper
+import com.beebetter.wifer.util.TimerHelper.Companion.getTimerObservable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import okhttp3.ResponseBody
@@ -30,13 +32,13 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     var stsServer = MutableLiveData<ServerBdo>()
     var stsServerUrl = MutableLiveData<String>()
     val downloadSpeed = MutableLiveData<String>()
-    val downloadAvailable = MutableLiveData<Boolean>().apply{value = false}
+    val downloadAvailable = MutableLiveData<Boolean>().apply { value = false }
     var compositeDisposable = CompositeDisposable()
 
     lateinit var downloadSubscriber: Subscriber<ResponseBody>
 
     override fun onTestBtnClick() {
-        if(downloadAvailable.value!!){
+        if (downloadAvailable.value!!) {
             compositeDisposable.clear()
         } else {
             startDownloadTest()
@@ -45,15 +47,27 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     }
 
     private fun startDownloadTest() {
+        startTestCountdown()
         val downloadDisposable = RxUtil.applySchedulers(
             stsServer.value?.apiService
-                ?.testDownload(token,TEST_DOWNLOAD_SIZE)!!
+                ?.testDownload(token, TEST_DOWNLOAD_SIZE)!!
                 .map { it ->
                     measureDownloadSpeed(it.body(), downloadSpeed, System.currentTimeMillis())
                 }
         )
             .repeat().subscribe { downloadSubscriber }
         compositeDisposable.add(downloadDisposable)
+    }
+
+    private fun startTestCountdown() {
+        getTimerObservable(TEST_COUNTDOWN)
+            .doOnComplete {
+                Log.d("fin", "finish")
+                compositeDisposable.clear()
+            }
+            .subscribe { it ->
+                Log.d("timer", it.toString())
+            }
     }
 
     fun getToken() {
@@ -67,9 +81,9 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     }
 
     private fun getServers(token: String): Disposable? {
-        if(userLocation ==null ||userLocation?.latitude==null||userLocation?.longitude==null){
+        if (userLocation == null || userLocation?.latitude == null || userLocation?.longitude == null) {
             userLocation = Location("r")
-userLocation?.latitude = 47.9999
+            userLocation?.latitude = 47.9999
             userLocation?.longitude = 19.56656
         }
         return RxUtil.applySchedulers(
