@@ -2,6 +2,7 @@ package com.beebetter.wifer.util;
 
 import android.os.Environment;
 import android.util.Log;
+import androidx.databinding.ObservableArrayList;
 import androidx.lifecycle.MutableLiveData;
 import com.beebetter.api.StsService;
 import com.beebetter.base.util.RxUtil;
@@ -18,7 +19,8 @@ import static com.beebetter.wifer.AppConfig.MEGABYTE;
 
 public class ProgressHelper {
 
-    public static void measureDownloadSpeed(ResponseBody body, MutableLiveData<String> downloadSpeed,long startDownloadTime) {
+    public static void measureDownloadSpeed(ResponseBody body, MutableLiveData<String> downloadSpeed,
+                                            long startDownloadTime, ObservableArrayList<Double> allDownloadSpeeds) {
         try {
 
             InputStream is = null;
@@ -39,6 +41,7 @@ public class ProgressHelper {
                     if(passedTime!=0) {
                         speed =(( Double.valueOf(progress)/Double.valueOf(MEGABYTE)) / (Double.valueOf(passedTime)/1000));
                         downloadSpeed.postValue(String.valueOf(String.format("%.2f", speed)));
+                        allDownloadSpeeds.add(speed);
                     }
                     Log.d(TAG, "Progress M: " + ( progress/MEGABYTE) + "/" + passedTime + " >>>> " + String.valueOf(speed));
                 }

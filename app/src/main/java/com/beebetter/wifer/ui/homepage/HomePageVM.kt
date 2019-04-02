@@ -2,6 +2,7 @@ package com.beebetter.wifer.ui.homepage
 
 import android.location.Location
 import android.util.Log
+import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.MutableLiveData
 import com.beebetter.api.ServersService
 import com.beebetter.api.model.server.ServerBdo
@@ -21,6 +22,7 @@ import io.reactivex.disposables.Disposable
 import okhttp3.ResponseBody
 import org.kodein.di.generic.instance
 import org.reactivestreams.Subscriber
+import java.util.*
 
 
 class HomePageVM : BaseViewModel(), HomePage.VM {
@@ -34,6 +36,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     val downloadSpeed = MutableLiveData<String>()
     val downloadAvailable = MutableLiveData<Boolean>().apply { value = false }
     var compositeDisposable = CompositeDisposable()
+    val allDownloadSpeeds = ObservableArrayList<Double>()
 
     lateinit var downloadSubscriber: Subscriber<ResponseBody>
 
@@ -52,7 +55,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
             stsServer.value?.apiService
                 ?.testDownload(token, TEST_DOWNLOAD_SIZE)!!
                 .map { it ->
-                    measureDownloadSpeed(it.body(), downloadSpeed, System.currentTimeMillis())
+                    measureDownloadSpeed(it.body(), downloadSpeed, System.currentTimeMillis(),allDownloadSpeeds)
                 }
         )
             .repeat().subscribe { downloadSubscriber }
@@ -72,6 +75,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     private fun finishTest() {
         compositeDisposable.clear()
         downloadAvailable.postValue(false)
+        downloadSpeed.postValue(String.format("%.2f",(allDownloadSpeeds.sum() /allDownloadSpeeds.size)))
     }
 
     fun getToken() {
