@@ -1,21 +1,15 @@
 package com.beebetter.wifer.util;
 
-import android.os.Environment;
 import android.util.Log;
 import androidx.databinding.ObservableArrayList;
 import androidx.lifecycle.MutableLiveData;
-import com.beebetter.api.StsService;
-import com.beebetter.base.util.RxUtil;
-import io.reactivex.Observable;
 import okhttp3.ResponseBody;
-import okio.BufferedSink;
-import okio.Okio;
-import retrofit2.Response;
 
 import java.io.*;
 
 import static android.content.ContentValues.TAG;
-import static com.beebetter.wifer.AppConfig.MEGABYTE;
+import static com.beebetter.wifer.AppConfig.BYTE;
+import static com.beebetter.wifer.AppConfig.MEGABIT;
 
 public class ProgressHelper {
 
@@ -39,11 +33,11 @@ public class ProgressHelper {
                     progress +=count;
                     passedTime = System.currentTimeMillis() - startDownloadTime;
                     if(passedTime!=0) {
-                        speed =(( Double.valueOf(progress)/Double.valueOf(MEGABYTE)) / (Double.valueOf(passedTime)/1000));
+                        speed =(( Double.valueOf(progress)*BYTE/MEGABIT) / (Double.valueOf(passedTime)/1000));
                         downloadSpeed.postValue(String.valueOf(String.format("%.2f", speed)));
                         allDownloadSpeeds.add(speed);
                     }
-                    Log.d(TAG, "Progress M: " + ( progress/MEGABYTE) + "/" + passedTime + " >>>> " + String.valueOf(speed));
+                    Log.d(TAG, "Progress M: " + ( progress/ MEGABIT) + "/" + passedTime + " >>>> " + String.valueOf(speed));
                 }
 
                 Log.d(TAG, "File saved successfully!");
@@ -57,7 +51,6 @@ public class ProgressHelper {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d(TAG, "Failed to save the file!");
             return;
         }
     }

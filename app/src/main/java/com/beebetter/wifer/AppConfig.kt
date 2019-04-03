@@ -6,7 +6,8 @@ class AppConfig {
         const val TEST_DOWNLOAD_SIZE = 200000000L
         const val TEST_COUNTDOWN = 15L
 
-       const val MEGABYTE =1024*1024L
+        const val MEGABIT = 1000000.0
+        const val BYTE = 8.0
 
     }
 }
