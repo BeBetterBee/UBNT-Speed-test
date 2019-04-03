@@ -87,7 +87,12 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
         downloadTestDisposable.clear()
         downloadAvailable.postValue(false)
         testProgress.postValue(5)
-        downloadSpeed.postValue(String.format("%.2f",(allDownloadSpeeds.sum() /allDownloadSpeeds.size)))
+        setAverageSpeed()
+    }
+
+    private fun setAverageSpeed() {
+        downloadSpeed.postValue(String.format("%.2f", (allDownloadSpeeds.sum() / allDownloadSpeeds.size)))
+        allDownloadSpeeds.clear()
     }
 
     fun getToken() {

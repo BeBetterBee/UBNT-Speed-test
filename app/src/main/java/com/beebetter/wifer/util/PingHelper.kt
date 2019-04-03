@@ -19,8 +19,6 @@ class PingHelper {
                     serverBdo.pingBdo = ping
                     ping.timeResponse.value =
                     pingResponse.raw().receivedResponseAtMillis() - pingResponse.raw().sentRequestAtMillis()
-                    Log.d("PingResponse",pingResponse.raw().sentRequestAtMillis().toString())
-                    Log.d("PingResponseReceived",pingResponse.raw().receivedResponseAtMillis().toString())
                     Observable.just(ping)
                 }
         }

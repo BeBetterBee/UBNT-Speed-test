@@ -11,55 +11,84 @@
         <import type="com.beebetter.base.util.DataBindingUtil"/>
     </data>
 
-    <LinearLayout android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:orientation="vertical">
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content">
-
-            <!-- STS SERVER URL -->
-            <TextView android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_gravity="center"
-                      android:layout_margin="20dp"
-                      android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.stsServerUrl!=null)}"
-                      android:text="@{vm.stsServerUrl}"/>
-
-            <!-- PING -->
-            <TextView android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_gravity="center"
-                      android:textStyle="bold"
-                      android:layout_margin="20dp"
-                      android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.stsServer.pingBdo.timeResponse!=null)}"
-                      android:text="@{String.format(@string/ping, vm.stsServer.pingBdo.timeResponse)}"/>
-        </LinearLayout>
-
-        <Button android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@{vm.downloadAvailable ? @drawable/ic_stop_test : @drawable/ic_start_test}"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="60dp"
-                android:layout_marginBottom="30dp"
-                android:onClick="@{()-> vm.onTestBtnClick()}"/>
-
-        <!-- DOWNLOAD SPEED -->
-        <TextView android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center"
-                  android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.downloadSpeed!=null)}"
-                  android:text="@{String.format(@string/download_speed, vm.downloadSpeed)}"/>
-
-        <ProgressBar
-                android:id="@+id/determinateBar"
-                android:layout_marginTop="20dp"
-                style="@android:style/Widget.ProgressBar.Horizontal"
-                android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.downloadAvailable)}"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
+        <!-- LOADING LAYOUT -->
+        <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:progress="@{vm.testProgress}"/>
-    </LinearLayout>
+                android:layout_height="match_parent"
+                android:visibility="@{DataBindingUtil.visibleOrGone(vm.stsServer==null)}">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/progress"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/server_initialization"/>
+            <ProgressBar
+                    android:id="@+id/progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+            />
+
+
+        </RelativeLayout>
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:orientation="vertical">
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content">
+
+                <!-- STS SERVER URL -->
+                <TextView android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_gravity="center"
+                          android:layout_margin="20dp"
+                          android:layout_marginStart="40dp"
+                          android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.stsServer.url!=null)}"
+                          android:text="@{vm.stsServerUrl}"/>
+
+                <!-- PING -->
+                <TextView android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_gravity="center"
+                          android:textStyle="bold"
+                          android:layout_margin="20dp"
+                          android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.stsServer.pingBdo.timeResponse!=null)}"
+                          android:text="@{String.format(@string/ping, vm.stsServer.pingBdo.timeResponse)}"/>
+            </LinearLayout>
+
+            <Button android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@{vm.downloadAvailable ? @drawable/ic_stop_test : @drawable/ic_start_test}"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginBottom="30dp"
+                    android:visibility="@{DataBindingUtil.visibleOrGone(vm.stsServer!=null)}"
+                    android:onClick="@{()-> vm.onTestBtnClick()}"/>
+
+            <!-- DOWNLOAD SPEED -->
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.downloadSpeed!=null)}"
+                      android:text="@{String.format(@string/download_speed, vm.downloadSpeed)}"/>
+
+            <!-- PROGRESS BAR -->
+            <ProgressBar
+                    android:id="@+id/determinateBar"
+                    android:layout_marginTop="20dp"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.downloadAvailable)}"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:progress="@{vm.testProgress}"/>
+        </LinearLayout>
+    </FrameLayout>
 </layout>
