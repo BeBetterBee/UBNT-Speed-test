@@ -35,7 +35,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     var stsServerUrl = MutableLiveData<String>()
     val downloadSpeed = MutableLiveData<String>()
     val downloadAvailable = MutableLiveData<Boolean>().apply { value = false }
-    var compositeDisposable = CompositeDisposable()
+    var downloadTestDisposable = CompositeDisposable()
     val allDownloadSpeeds = ObservableArrayList<Double>()
     val testProgress = MutableLiveData<Int>()
 
@@ -46,28 +46,33 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     }
 
     override fun onTestBtnClick() {
-        if (downloadAvailable.value!!) {
+        if (downloadAvailable.value == true) {
             finishTest()
         } else {
-            startDownloadTest()
+            RxUtil.applySchedulers(apiService.getToken())
+                ?.doOnError { Log.d("testApi", "No response") }
+                ?.subscribe { response ->
+                    token = response.token
+                    startDownloadTest()
+                }
         }
     }
 
     private fun startDownloadTest() {
         downloadAvailable.value = true
         startTestCountdown()
-        val downloadDisposable = RxUtil.applySchedulers(
+        this.downloadTestDisposable.add(RxUtil.applySchedulers(
             stsServer.value?.apiService
                 ?.testDownload(token, TEST_DOWNLOAD_SIZE)!!
                 .map { it ->
                     measureDownloadSpeed(it.body(), downloadSpeed, System.currentTimeMillis(),allDownloadSpeeds)
                 }
         )
-            .repeat().subscribe { downloadSubscriber }
-        compositeDisposable.add(downloadDisposable)
+            .repeat().subscribe { downloadSubscriber })
     }
 
     private fun startTestCountdown() {
+       downloadTestDisposable.add(
         getTimerObservable(TEST_COUNTDOWN)
             .doOnComplete {
                 finishTest()
@@ -75,12 +80,13 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
             .subscribe { it ->
                 testProgress.postValue(testProgress.value?.plus(7))
                 Log.d("timer", testProgress.value.toString())
-            }
+            })
     }
 
     private fun finishTest() {
-        compositeDisposable.clear()
+        downloadTestDisposable.clear()
         downloadAvailable.postValue(false)
+        testProgress.postValue(5)
         downloadSpeed.postValue(String.format("%.2f",(allDownloadSpeeds.sum() /allDownloadSpeeds.size)))
     }
 
