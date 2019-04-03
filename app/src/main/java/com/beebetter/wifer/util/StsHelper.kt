@@ -1,6 +1,7 @@
 package com.beebetter.wifer.util
 
 import android.location.Location
+import android.util.Log
 import com.beebetter.api.ApiHelper
 import com.beebetter.api.StsService
 import com.beebetter.api.model.server.ServerBdo
@@ -24,23 +25,34 @@ class StsHelper {
                 .toList()
         }
 
-
-        fun getClosestServerObservable(
+        fun getDistanceForServersObservable(
             userLocation: Location,
             serversResponse: List<ServerBdo>
+        ): Observable<ServerBdo>? {
+            return Observable.fromIterable(serversResponse)
+                .map { server ->
+                    server.distanceFromUser = MapUtil.getDistanceFrom(
+                        userLocation,
+                        server.latitude!!,
+                        server.longitude!!
+                    )
+                    server
+                }
+        }
+
+
+        fun getClosestServerObservable(
+            serversResponse: List<ServerBdo>
         ): Single<MutableList<ServerBdo>>? {
-            val allDistances = ArrayList<Float>()
             return Observable.just(serversResponse)
-                .map { unsortedServerList ->
-                    unsortedServerList.sortedBy {
-                        allDistances.add(
-                            MapUtil.getDistanceFrom(
-                                userLocation,
-                                it.latitude!!,
-                                it.longitude!!
-                            )
-                        )
-                    }
+                .map { unsortedDistanceServerList ->
+                   val sortedDistanceList = unsortedDistanceServerList.sortedWith(
+                        compareBy {
+                           it.distanceFromUser
+                        })
+                    sortedDistanceList.forEach { Log.d("sortedDist","url: " + it.url + "distance:" +it.distanceFromUser) }
+                    unsortedDistanceServerList.forEach { Log.d("sortedDist","url: " + it.url + "distance:" +it.distanceFromUser) }
+                    sortedDistanceList
                 }
                 .flatMapIterable { server -> server }
                 .take(AppConfig.CLOSEST_SERVER_COUNT)

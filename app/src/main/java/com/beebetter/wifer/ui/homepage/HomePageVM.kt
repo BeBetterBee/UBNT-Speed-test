@@ -16,7 +16,7 @@ import com.beebetter.wifer.util.PingHelper.Companion.getPingObservable
 import com.beebetter.wifer.util.PingHelper.Companion.getSmallestPingObservable
 import com.beebetter.wifer.util.ProgressHelper.measureDownloadSpeed
 import com.beebetter.wifer.util.StsHelper
-import com.beebetter.wifer.util.TimerHelper.Companion.getTimerObservable
+import com.beebetter.wifer.util.TimerHelper.Companion.getCountDownObservable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import okhttp3.ResponseBody
@@ -30,6 +30,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     var userLocation: Location? = null
     var token: String = ""
     lateinit var serversResponse: List<ServerBdo>
+    var serversResponseDistance = ArrayList<ServerBdo>()
     lateinit var closest5Servers: List<ServerBdo>
     var stsServer = MutableLiveData<ServerBdo>()
     var stsServerUrl = MutableLiveData<String>()
@@ -65,22 +66,22 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
             stsServer.value?.apiService
                 ?.testDownload(token, TEST_DOWNLOAD_SIZE)!!
                 .map { it ->
-                    measureDownloadSpeed(it.body(), downloadSpeed, System.currentTimeMillis(),allDownloadSpeeds)
+                    measureDownloadSpeed(it.body(), downloadSpeed, System.currentTimeMillis(), allDownloadSpeeds)
                 }
         )
             .repeat().subscribe { downloadSubscriber })
     }
 
     private fun startTestCountdown() {
-       downloadTestDisposable.add(
-        getTimerObservable(TEST_COUNTDOWN)
-            .doOnComplete {
-                finishTest()
-            }
-            .subscribe { it ->
-                testProgress.postValue(testProgress.value?.plus(7))
-                Log.d("timer", testProgress.value.toString())
-            })
+        downloadTestDisposable.add(
+            getCountDownObservable(TEST_COUNTDOWN)
+                .doOnComplete {
+                    finishTest()
+                }
+                .subscribe { it ->
+                    testProgress.postValue(testProgress.value?.plus(7))
+                    Log.d("timer", testProgress.value.toString())
+                })
     }
 
     private fun finishTest() {
@@ -109,8 +110,8 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
         return RxUtil.applySchedulers(
             apiService.getServers(userLocation?.latitude!!, userLocation?.longitude!!, token)
         )
-            ?.doOnError { Log.d("testApi", "No response server") }
-            ?.subscribe { response ->
+            .doOnError { Log.d("testApi", "No response server") }
+            .subscribe { response ->
                 val resObjects = ArrayList<ServerBdo>()
                 for (server in response) {
                     resObjects.add(Converter.convert(server))
@@ -122,11 +123,22 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     }
 
     private fun getClosestServers() {
-        StsHelper.getClosestServerObservable(this!!.userLocation!!, serversResponse)
-            ?.subscribe { closestServers ->
-                closest5Servers = closestServers
-                setApiForStsServers(closest5Servers)
-                Log.d("distances", "all distances sorted" + closestServers)
+        StsHelper.getDistanceForServersObservable(this!!.userLocation!!, serversResponse)
+            ?.doOnComplete {
+                StsHelper.getClosestServerObservable(serversResponseDistance)
+                    ?.subscribe { closestServers ->
+                        closest5Servers = closestServers
+                        setApiForStsServers(closest5Servers)
+                        closestServers.forEach { it ->
+                            Log.d(
+                                "distances",
+                                "distance" + it.distanceFromUser + "url " + it.url
+                            )
+                        }
+                    }
+            }
+            ?.subscribe { it ->
+                serversResponseDistance.add(it)
             }
     }
 

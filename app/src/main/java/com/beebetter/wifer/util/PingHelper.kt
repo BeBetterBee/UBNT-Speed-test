@@ -1,20 +1,13 @@
 package com.beebetter.wifer.util
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import com.beebetter.api.model.ping.PingBdo
 import com.beebetter.api.model.ping.PingResponse
 import com.beebetter.api.model.server.ServerBdo
 import com.beebetter.base.util.RxUtil
 import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import android.net.NetworkInfo
-import android.content.Context.CONNECTIVITY_SERVICE
-import androidx.core.content.ContextCompat.getSystemService
-import android.net.ConnectivityManager
-import com.beebetter.wifer.Wifer
 
 
 class PingHelper {
@@ -25,15 +18,20 @@ class PingHelper {
                     val ping = PingBdo.convert(pingResponse?.body() as PingResponse)
                     serverBdo.pingBdo = ping
                     ping.timeResponse.value =
-                    pingResponse.raw().receivedResponseAtMillis() - pingResponse.raw().sentRequestAtMillis()
+                        pingResponse.raw().receivedResponseAtMillis() - pingResponse.raw().sentRequestAtMillis()
                     Observable.just(ping)
                 }
         }
 
         fun getSmallestPingObservable(closest5Servers: List<ServerBdo>): Observable<ServerBdo>? {
-            val allPings = ArrayList<Float>()
             return Observable.just(closest5Servers)
-                .map { unsorted -> unsorted.sortedBy { allPings.add(it.pingBdo?.timeResponse!!.value!!.toFloat()) } }
+                .map { unsorted ->
+                    val sorted =
+                        unsorted.sortedWith(
+                            compareBy { it.pingBdo?.timeResponse!!.value!! })
+                    sorted.forEach { Log.d("url", "url : " + it.url + " ping : " + it.pingBdo?.timeResponse?.value) }
+                    sorted
+                }
                 .take(1)
                 .map { it[0] }
         }

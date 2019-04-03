@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 
 class TimerHelper {
     companion object {
-        fun getTimerObservable(countDown:Long): Observable<Long> {
+        fun getCountDownObservable(countDown:Long): Observable<Long> {
             return Observable.interval(0,1,TimeUnit.SECONDS)
                 .take(countDown+1)
                 .map{remainingTime -> remainingTime-1}
