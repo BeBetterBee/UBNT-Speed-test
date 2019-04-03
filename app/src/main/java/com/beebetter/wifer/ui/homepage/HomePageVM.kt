@@ -14,7 +14,7 @@ import com.beebetter.wifer.Wifer.Companion.kodein
 import com.beebetter.wifer.util.Converter
 import com.beebetter.wifer.util.PingHelper.Companion.getPingObservable
 import com.beebetter.wifer.util.PingHelper.Companion.getSmallestPingObservable
-import com.beebetter.wifer.util.ProgressHelper.measureDownloadSpeed
+import com.beebetter.wifer.util.DownloadHelper.measureDownloadSpeed
 import com.beebetter.wifer.util.StsHelper
 import com.beebetter.wifer.util.TimerHelper.Companion.getCountDownObservable
 import io.reactivex.disposables.CompositeDisposable

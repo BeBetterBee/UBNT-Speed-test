@@ -14,8 +14,8 @@ class PingHelper {
     companion object {
         fun getPingObservable(serverBdo: ServerBdo, token: String): Observable<PingBdo>? {
             return RxUtil.applySchedulers(serverBdo.apiService?.ping(token)!!)
-                ?.flatMap { pingResponse ->
-                    val ping = PingBdo.convert(pingResponse?.body() as PingResponse)
+                .flatMap { pingResponse ->
+                    val ping = PingBdo.convert(pingResponse.body() as PingResponse)
                     serverBdo.pingBdo = ping
                     ping.timeResponse.value =
                         pingResponse.raw().receivedResponseAtMillis() - pingResponse.raw().sentRequestAtMillis()
