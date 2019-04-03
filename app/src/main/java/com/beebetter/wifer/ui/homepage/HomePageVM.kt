@@ -37,8 +37,13 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     val downloadAvailable = MutableLiveData<Boolean>().apply { value = false }
     var compositeDisposable = CompositeDisposable()
     val allDownloadSpeeds = ObservableArrayList<Double>()
+    val testProgress = MutableLiveData<Int>()
 
     lateinit var downloadSubscriber: Subscriber<ResponseBody>
+
+    init {
+        testProgress.value = 5
+    }
 
     override fun onTestBtnClick() {
         if (downloadAvailable.value!!) {
@@ -68,7 +73,8 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
                 finishTest()
             }
             .subscribe { it ->
-                Log.d("timer", it.toString())
+                testProgress.postValue(testProgress.value?.plus(7))
+                Log.d("timer", testProgress.value.toString())
             }
     }
 

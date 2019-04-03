@@ -50,5 +50,16 @@
                   android:layout_gravity="center"
                   android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.downloadSpeed!=null)}"
                   android:text="@{String.format(@string/download_speed, vm.downloadSpeed)}"/>
+
+        <ProgressBar
+                android:id="@+id/determinateBar"
+                android:layout_marginTop="20dp"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:visibility="@{DataBindingUtil.visibleOrInvisible(vm.downloadAvailable)}"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:progress="@{vm.testProgress}"/>
     </LinearLayout>
 </layout>

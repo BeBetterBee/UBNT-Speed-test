@@ -1,8 +1,7 @@
 package com.beebetter.wifer.util
 
-import android.content.Context
 import android.location.Location
-import com.beebetter.api.ApiService
+import com.beebetter.api.ApiHelper
 import com.beebetter.api.StsService
 import com.beebetter.api.model.server.ServerBdo
 import com.beebetter.wifer.AppConfig
@@ -18,7 +17,7 @@ class StsHelper {
         fun getApiForStsObservable(closest5Servers: List<ServerBdo>): Single<MutableList<ServerBdo>>? {
             return Observable.fromIterable(closest5Servers)
                 .flatMap { it ->
-                    it.apiService = ApiService.initRxRetrofit(it.url!!, getOkHttpDownloadClientBuilder().build())
+                    it.apiService = ApiHelper.initRxRetrofit(it.url!!, getOkHttpDownloadClientBuilder().build())
                         .create(StsService::class.java)
                     Observable.just(it)
                 }
