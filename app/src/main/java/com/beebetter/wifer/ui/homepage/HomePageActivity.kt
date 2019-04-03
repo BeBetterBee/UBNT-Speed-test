@@ -4,9 +4,9 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import com.beebetter.base.view.BaseActivity
+import com.beebetter.wifer.R
 import com.beebetter.wifer.databinding.ActivityHomepageBinding
 import com.beebetter.wifer.util.PingHelper.Companion.isNetworkAvailable
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -14,7 +14,7 @@ import com.google.android.gms.location.LocationServices
 import com.tbruyelle.rxpermissions2.RxPermissions
 
 
-class HomePageActivity : BaseActivity<ActivityHomepageBinding,HomePageVM>() {
+class HomePageActivity : BaseActivity<ActivityHomepageBinding, HomePageVM>(), HomePage.View {
     override val layoutId = com.beebetter.wifer.R.layout.activity_homepage
     override val viewModelClass = HomePageVM::class
 
@@ -27,7 +27,7 @@ class HomePageActivity : BaseActivity<ActivityHomepageBinding,HomePageVM>() {
         checkInternetConnection()
     }
 
-    private fun checkInternetConnection() {
+    override fun checkInternetConnection() {
         if (!isNetworkAvailable(this)) {
             showDialogForNoInternet()
         } else {
@@ -37,9 +37,19 @@ class HomePageActivity : BaseActivity<ActivityHomepageBinding,HomePageVM>() {
 
     private fun showDialogForNoInternet() {
         val builder = AlertDialog.Builder(this)
-        builder.setMessage("There is no internet connection")
-        builder.setPositiveButton("Refresh") { dialog, which ->
-          checkInternetConnection()
+        builder.setMessage(R.string.dialog_no_internet)
+        builder.setPositiveButton(R.string.dialog_no_internet_btn) { dialog, which ->
+            checkInternetConnection()
+            dialog.cancel()
+        }
+        builder.create().show()
+    }
+
+    private fun showDialogForNoLocationPermission() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(R.string.dialog_no_location)
+        builder.setPositiveButton(R.string.dialog_no_location_btn) { dialog, which ->
+            viewModel.getToken()
             dialog.cancel()
         }
         builder.create().show()
@@ -52,21 +62,25 @@ class HomePageActivity : BaseActivity<ActivityHomepageBinding,HomePageVM>() {
                 if (granted) {
                     obtainLocalization()
                 } else {
-                    // Oups permission denied
+                    setDummyLocation()
+                    showDialogForNoLocationPermission()
                 }
             }
     }
 
+    private fun setDummyLocation() {
+        viewModel.userLocation = Location("r")
+        viewModel.userLocation?.latitude = 47.9999
+        viewModel.userLocation?.longitude = 19.56656
+    }
+
+
     @SuppressLint("MissingPermission")
-    private fun obtainLocalization(){
+    private fun obtainLocalization() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 viewModel.userLocation = location
                 viewModel.getToken()
-               val latitude =  location?.latitude
-                val longitude = location?.longitude
-                Log.d("location",latitude.toString()
-                        +" and longitude"+ longitude)
             }
     }
 }

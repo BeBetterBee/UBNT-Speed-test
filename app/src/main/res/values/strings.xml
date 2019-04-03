@@ -4,4 +4,11 @@
     <string name="ping">%1$s ms</string>
     <string name="download_speed">%1$s Mbps</string>
     <string name="server_initialization"> Initialization of testing server</string>
+
+    <!-- DIALOG-->
+    <string name="dialog_no_internet">There is no internet connection</string>
+    <string name="dialog_no_internet_btn">Refresh</string>
+    <string name="dialog_no_location">The results will be less precise due to missing location permission. For better results allow location in settings</string>
+    <string name="dialog_no_location_btn">Ok</string>
+
 </resources>
