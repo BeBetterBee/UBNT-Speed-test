@@ -106,11 +106,6 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     }
 
     private fun getServers(token: String): Disposable? {
-        if (userLocation == null || userLocation?.latitude == null || userLocation?.longitude == null) {
-            userLocation = Location("r")
-            userLocation?.latitude = 47.9999
-            userLocation?.longitude = 19.56656
-        }
         return RxUtil.applySchedulers(
             apiService.getServers(userLocation?.latitude!!, userLocation?.longitude!!, token)
         )

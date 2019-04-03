@@ -1,6 +1,7 @@
 package com.beebetter.wifer
 
 import android.app.Application
+import android.content.Context
 import com.beebetter.api.ApiConfig.Companion.BASE_URL
 import com.beebetter.api.ApiHelper
 import com.beebetter.api.ApiHelper.Companion.initRxRetrofit
@@ -12,8 +13,18 @@ import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 
 class Wifer : Application() {
+
+    init {
+        instance = this
+    }
+
     companion object {
-        lateinit var instance: Wifer
+        private var instance: Wifer? = null
+
+        fun applicationContext() : Context {
+            return instance!!.applicationContext
+        }
+
         var kodein = Kodein {
             bind<Retrofit>() with singleton { initRxRetrofit(BASE_URL, ApiHelper.initOkHttp()) }
             bind<ServersService>() with singleton {
@@ -21,10 +32,10 @@ class Wifer : Application() {
                 retrofit.create(ServersService::class.java)
             }
         }
+
     }
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
     }
 }

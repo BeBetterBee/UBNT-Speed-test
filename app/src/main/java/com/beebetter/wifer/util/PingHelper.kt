@@ -1,5 +1,6 @@
 package com.beebetter.wifer.util
 
+import android.content.Context
 import android.util.Log
 import com.beebetter.api.model.ping.PingBdo
 import com.beebetter.api.model.ping.PingResponse
@@ -9,6 +10,12 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import android.net.NetworkInfo
+import android.content.Context.CONNECTIVITY_SERVICE
+import androidx.core.content.ContextCompat.getSystemService
+import android.net.ConnectivityManager
+import com.beebetter.wifer.Wifer
+
 
 class PingHelper {
     companion object {
@@ -29,6 +36,12 @@ class PingHelper {
                 .map { unsorted -> unsorted.sortedBy { allPings.add(it.pingBdo?.timeResponse!!.value!!.toFloat()) } }
                 .take(1)
                 .map { it[0] }
+        }
+
+        fun isNetworkAvailable(context: Context): Boolean {
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+            val activeNetworkInfo = connectivityManager!!.activeNetworkInfo
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected
         }
     }
 }

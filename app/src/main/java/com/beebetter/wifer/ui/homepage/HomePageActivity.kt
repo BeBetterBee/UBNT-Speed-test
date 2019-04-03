@@ -5,16 +5,17 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import com.beebetter.base.view.BaseActivity
-import com.beebetter.wifer.R
 import com.beebetter.wifer.databinding.ActivityHomepageBinding
+import com.beebetter.wifer.util.PingHelper.Companion.isNetworkAvailable
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.tbruyelle.rxpermissions2.RxPermissions
 
 
 class HomePageActivity : BaseActivity<ActivityHomepageBinding,HomePageVM>() {
-    override val layoutId = R.layout.activity_homepage
+    override val layoutId = com.beebetter.wifer.R.layout.activity_homepage
     override val viewModelClass = HomePageVM::class
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -23,7 +24,28 @@ class HomePageActivity : BaseActivity<ActivityHomepageBinding,HomePageVM>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        checkInternetConnection()
+    }
 
+    private fun checkInternetConnection() {
+        if (!isNetworkAvailable(this)) {
+            showDialogForNoInternet()
+        } else {
+            checkLocationPermissions()
+        }
+    }
+
+    private fun showDialogForNoInternet() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("There is no internet connection")
+        builder.setPositiveButton("Refresh") { dialog, which ->
+          checkInternetConnection()
+            dialog.cancel()
+        }
+        builder.create().show()
+    }
+
+    private fun checkLocationPermissions() {
         rxPermissions
             .request(Manifest.permission.ACCESS_FINE_LOCATION)
             .subscribe { granted ->
