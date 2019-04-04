@@ -19,7 +19,7 @@ class HomePageActivity : BaseActivity<ActivityHomepageBinding, HomePageVM>(), Ho
     override val viewModelClass = HomePageVM::class
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    val rxPermissions = RxPermissions(this)
+    private val rxPermissions = RxPermissions(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +38,7 @@ class HomePageActivity : BaseActivity<ActivityHomepageBinding, HomePageVM>(), Ho
     private fun showDialogForNoInternet() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage(R.string.dialog_no_internet)
-        builder.setPositiveButton(R.string.dialog_no_internet_btn) { dialog, which ->
+        builder.setPositiveButton(R.string.dialog_no_internet_btn) { dialog, _ ->
             checkInternetConnection()
             dialog.cancel()
         }
@@ -48,14 +48,14 @@ class HomePageActivity : BaseActivity<ActivityHomepageBinding, HomePageVM>(), Ho
     private fun showDialogForNoLocationPermission() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage(R.string.dialog_no_location)
-        builder.setPositiveButton(R.string.dialog_no_location_btn) { dialog, which ->
+        builder.setPositiveButton(R.string.dialog_no_location_btn) { dialog, _ ->
             viewModel.getToken()
             dialog.cancel()
         }
         builder.create().show()
     }
 
-    private fun checkLocationPermissions() {
+    override fun checkLocationPermissions() {
         rxPermissions
             .request(Manifest.permission.ACCESS_FINE_LOCATION)
             .subscribe { granted ->
@@ -68,6 +68,9 @@ class HomePageActivity : BaseActivity<ActivityHomepageBinding, HomePageVM>(), Ho
             }
     }
 
+    /**
+     * Sets dummy Location if user disables access to device location
+     * */
     private fun setDummyLocation() {
         viewModel.userLocation = Location("r")
         viewModel.userLocation?.latitude = 47.9999

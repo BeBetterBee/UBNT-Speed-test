@@ -12,13 +12,12 @@ import com.beebetter.wifer.AppConfig.Companion.TEST_COUNTDOWN
 import com.beebetter.wifer.AppConfig.Companion.TEST_DOWNLOAD_SIZE
 import com.beebetter.wifer.Wifer.Companion.kodein
 import com.beebetter.wifer.util.Converter
+import com.beebetter.wifer.util.DownloadHelper.measureDownloadSpeed
 import com.beebetter.wifer.util.PingHelper.Companion.getPingObservable
 import com.beebetter.wifer.util.PingHelper.Companion.getSmallestPingObservable
-import com.beebetter.wifer.util.DownloadHelper.measureDownloadSpeed
 import com.beebetter.wifer.util.StsHelper
 import com.beebetter.wifer.util.TimerHelper.Companion.getCountDownObservable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import okhttp3.ResponseBody
 import org.kodein.di.generic.instance
 import org.reactivestreams.Subscriber
@@ -29,15 +28,16 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
     private val apiService: ServersService by kodein.instance()
     var userLocation: Location? = null
     var token: String = ""
-    lateinit var serversResponse: List<ServerBdo>
+    private lateinit var serversResponse: List<ServerBdo>
     var serversResponseDistance = ArrayList<ServerBdo>()
     lateinit var closest5Servers: List<ServerBdo>
     var stsServer = MutableLiveData<ServerBdo>()
     var stsServerUrl = MutableLiveData<String>()
+
     val downloadSpeed = MutableLiveData<String>()
     val downloadAvailable = MutableLiveData<Boolean>().apply { value = false }
     var downloadTestDisposable = CompositeDisposable()
-    val allDownloadSpeeds = ObservableArrayList<Double>()
+    private val allDownloadSpeeds = ObservableArrayList<Double>()
     val testProgress = MutableLiveData<Int>()
 
     lateinit var downloadSubscriber: Subscriber<ResponseBody>
@@ -59,7 +59,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
         }
     }
 
-    private fun startDownloadTest() {
+    override fun startDownloadTest() {
         downloadAvailable.value = true
         startTestCountdown()
         this.downloadTestDisposable.add(RxUtil.applySchedulers(
@@ -72,7 +72,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
             .repeat().subscribe { downloadSubscriber })
     }
 
-    private fun startTestCountdown() {
+    override fun startTestCountdown() {
         downloadTestDisposable.add(
             getCountDownObservable(TEST_COUNTDOWN)
                 .doOnComplete {
@@ -96,7 +96,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
         allDownloadSpeeds.clear()
     }
 
-    fun getToken() {
+    override fun getToken() {
         RxUtil.applySchedulers(apiService.getToken())
             ?.doOnError { Log.d("testApi", "No response") }
             ?.subscribe { response ->
@@ -106,8 +106,8 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
             }
     }
 
-    private fun getServers(token: String): Disposable? {
-        return RxUtil.applySchedulers(
+    override fun getServers(token: String) {
+        RxUtil.applySchedulers(
             apiService.getServers(userLocation?.latitude!!, userLocation?.longitude!!, token)
         )
             .doOnError { Log.d("testApi", "No response server") }
@@ -122,7 +122,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
             }
     }
 
-    private fun getClosestServers() {
+    override fun getClosestServers() {
         StsHelper.getDistanceForServersObservable(this!!.userLocation!!, serversResponse)
             ?.doOnComplete {
                 StsHelper.getClosestServerObservable(serversResponseDistance)
@@ -142,18 +142,14 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
             }
     }
 
-    private fun setApiForStsServers(closest5Servers: List<ServerBdo>) {
+    override fun setApiForStsServers(closest5Servers: List<ServerBdo>) {
         StsHelper.getApiForStsObservable(closest5Servers)
             ?.subscribe { it ->
-                getPingResponses()
+                getPingForClosestServers()
             }
     }
 
-    private fun getPingResponses() {
-        setPing()
-    }
-
-    private fun pickSmallestPing() {
+    override fun pickSmallestPing() {
         RxUtil.applySchedulers(getSmallestPingObservable(closest5Servers)!!)
             ?.subscribe { it ->
                 stsServerUrl.value = (it.url)
@@ -165,7 +161,7 @@ class HomePageVM : BaseViewModel(), HomePage.VM {
             }
     }
 
-    private fun setPing() {
+    override fun getPingForClosestServers() {
         getPingObservable(closest5Servers[0], token)
             ?.subscribe { it ->
                 getPingObservable(closest5Servers[1], token)

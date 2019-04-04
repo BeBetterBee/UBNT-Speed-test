@@ -21,7 +21,7 @@ class Wifer : Application() {
     companion object {
         private var instance: Wifer? = null
 
-        fun applicationContext() : Context {
+        fun applicationContext(): Context {
             return instance!!.applicationContext
         }
 
@@ -33,9 +33,5 @@ class Wifer : Application() {
             }
         }
 
-    }
-
-    override fun onCreate() {
-        super.onCreate()
     }
 }

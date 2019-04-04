@@ -12,7 +12,7 @@ class AuthenticationInterceptor(token: String) : Interceptor {
         val request = chain.request()
         val authenticatedRequest = request.newBuilder()
             .header("x-test-token", credentials).build()
-        Log.d("inte0","Adding interceptor")
+        Log.d("inte0", "Adding interceptor")
         return chain.proceed(authenticatedRequest)
     }
 }

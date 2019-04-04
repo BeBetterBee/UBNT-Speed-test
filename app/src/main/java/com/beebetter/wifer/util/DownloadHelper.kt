@@ -1,15 +1,14 @@
 package com.beebetter.wifer.util
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.MutableLiveData
-import okhttp3.ResponseBody
-
-import java.io.*
-
-import android.content.ContentValues.TAG
 import com.beebetter.wifer.AppConfig.Companion.BYTE
 import com.beebetter.wifer.AppConfig.Companion.MEGABIT
+import okhttp3.ResponseBody
+import java.io.IOException
+import java.io.InputStream
 
 object DownloadHelper {
 
@@ -32,7 +31,7 @@ object DownloadHelper {
                 var passedTime: Long = 0
                 var speed = 0.0
                 count = inputStream.read(data)
-                while (count  != -1) {
+                while (count != -1) {
                     progress += count
                     passedTime = System.currentTimeMillis() - startDownloadTime
                     if (passedTime != 0L) {

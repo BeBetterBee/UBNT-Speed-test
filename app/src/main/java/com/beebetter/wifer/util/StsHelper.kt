@@ -42,12 +42,22 @@ class StsHelper {
         ): Single<MutableList<ServerBdo>>? {
             return Observable.just(serversResponse)
                 .map { unsortedDistanceServerList ->
-                   val sortedDistanceList = unsortedDistanceServerList.sortedWith(
+                    val sortedDistanceList = unsortedDistanceServerList.sortedWith(
                         compareBy {
-                           it.distanceFromUser
+                            it.distanceFromUser
                         })
-                    sortedDistanceList.forEach { Log.d("sortedDist","url: " + it.url + "distance:" +it.distanceFromUser) }
-                    unsortedDistanceServerList.forEach { Log.d("sortedDist","url: " + it.url + "distance:" +it.distanceFromUser) }
+                    sortedDistanceList.forEach {
+                        Log.d(
+                            "sortedDist",
+                            "url: " + it.url + "distance:" + it.distanceFromUser
+                        )
+                    }
+                    unsortedDistanceServerList.forEach {
+                        Log.d(
+                            "sortedDist",
+                            "url: " + it.url + "distance:" + it.distanceFromUser
+                        )
+                    }
                     sortedDistanceList
                 }
                 .flatMapIterable { server -> server }
